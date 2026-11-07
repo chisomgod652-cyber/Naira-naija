@@ -1,0 +1,2 @@
+# Naira-naija
+Be  genius and accept the faith of others,no matter what we face in this life.hhdhdbdjdhdhfudhfbfhfjfhgfssgsfsfsfssfgsgshshsysushshdhdhdh sh dbdnkdjdkdidhdhduddhdjdjdjjdfkfjdjdjbfbdfhfhfhfhdhdudhfhhfhhffjjfjfjffjfjjfhjjffufufjfhbfhhfjfjjffjffhjffhksosoaisoskmdndbxbbxjxlxms.mslzkssmmzmxksmsmxmkzkzzkzkxmsmzmmzmzkxkdkkxkxkkxkdkkdndndndjdjjdbddhdbdndjd
