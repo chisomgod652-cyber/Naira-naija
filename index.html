@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naija Brain Cash - Play to Win</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#0f172a;color:white;text-align:center;padding:15px}
+.card{background:#1e293b;border-radius:16px;padding:20px;max-width:450px;margin:15px auto;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+h1{color:#facc15;font-size:28px;margin:5px}
+h2{margin:10px 0}
+button{background:#facc15;color:black;border:none;padding:14px 20px;border-radius:12px;font-weight:bold;font-size:16px;width:100%;margin:8px 0;cursor:pointer}
+button.secondary{background:#334155;color:white}
+input{width:100%;padding:14px;border-radius:12px;border:none;margin:8px 0;font-size:16px;text-align:center}
+.wallet{background:#022c22;border:1px solid #22c55e;padding:12px;border-radius:12px}
+.wallet b{color:#4ade80;font-size:22px}
+.qbox{background:white;color:black;padding:18px;border-radius:14px;text-align:left}
+.opt{background:#f1f5f9;padding:12px;margin:8px 0;border-radius:10px;cursor:pointer;font-weight:bold}
+.opt:active{background:#facc15}
+.timer{font-size:22px;color:#ef4444;font-weight:bold}
+.leader{ text-align:left;background:#0f172a;padding:10px;border-radius:10px}
+.leader div{padding:8px;border-bottom:1px solid #334155}
+.badge{background:#facc15;color:black;padding:3px 8px;border-radius:20px;font-size:12px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<h1>💰 NAIJA BRAIN CASH</h1>
+<p>Answer 10 Questions in 60s • Win Real Cash</p>
+
+<!-- LOGIN -->
+<div id="loginCard" class="card">
+  <h2>Welcome Player 👋</h2>
+  <p>Enter your name to start</p>
+  <input id="playerName" placeholder="e.g. Tobi from PH" />
+  <button onclick="startApp()">ENTER GAME</button>
+  <p style="font-size:12px;color:#94a3b8">18+ • Skill-based • Winners paid same day via Opay/Bank</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashCard" class="card hidden">
+  <p>Hello <b id="showName"></b> <span class="badge">PLAYER</span></p>
+  <div class="wallet">Your Wallet Balance<br><b id="walletBal">₦1,000</b><br><span style="font-size:12px">Demo Balance for Testing</span></div>
+  <p>Entry Fee: <b>₦500</b> • Today's Prize: <b>₦4,000</b></p>
+  <button onclick="startGame()">▶ PLAY NOW - ₦500</button>
+  <button class="secondary" onclick="addMoney()">+ ADD MONEY (Paystack Coming)</button>
+  
+  <h3>🏆 Today's Leaderboard</h3>
+  <div class="leader" id="leaderboard">
+    <div>1. Chiamaka - 9/10 - ₦4,000</div>
+    <div>2. Emeka - 8/10 - ₦2,000</div>
+    <div>3. Fatima - 7/10 - ₦1,000</div>
+    <div>4. You - 0/10</div>
+  </div>
+  <p style="font-size:12px;color:#94a3b8">Top 3 at 9PM daily get paid. Paystack integration: Replace pk_test_xxx in code</p>
+</div>
+
+<!-- GAME -->
+<div id="gameCard" class="card hidden">
+  <div style="display:flex;justify-content:space-between"><span>Q <b id="qNum">1</b>/10</span><span class="timer">⏱ <span id="timeLeft">60</span>s</span><span>Score: <b id="score">0</b></span></div>
+  <div class="qbox"><h3 id="questionText"></h3><div id="options"></div></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultCard" class="card hidden">
+  <h2>🎉 Game Over!</h2>
+  <h1 id="finalScore"></h1>
+  <p id="winMsg"></p>
+  <button onclick="backToDash()">BACK TO DASHBOARD</button>
+  <button class="secondary" onclick="startGame()">PLAY AGAIN - ₦500</button>
+</div>
+
+<script>
+let player="", balance=1000, score=0, qIndex=0, timerInt, timeLeft=60;
+let questions=[
+{q:"Which state is Port Harcourt in?",a:["Rivers","Lagos","Abuja","Kano"],c:0},
+{q:"Who sang 'Calm Down'?",a:["Burna Boy","Rema","Davido","Wizkid"],c:1},
+{q:"What is 15 + 25?",a:["30","40","50","35"],c:1},
+{q:"Which team wears Green-White-Green?",a:["Ghana","Nigeria","Kenya","Egypt"],c:1},
+{q:"Capital of Nigeria?",a:["Lagos","Abuja","Kano","PH"],c:1},
+{q:"How many days in a leap year?",a:["365","366","364","360"],c:1},
+{q:"Which app is for chatting?",a:["WhatsApp","Calculator","Camera","Maps"],c:0},
+{q:"What is the largest state in Nigeria?",a:["Lagos","Kano","Niger","Borno"],c:2},
+{q:"Who is the richest man in Africa?",a:["Dangote","Otedola","Davido","Obi"],c:0},
+{q:"What color do you get mixing Red + White?",a:["Pink","Blue","Green","Black"],c:0}
+];
+function startApp(){
+  player=document.getElementById('playerName').value||"Player";
+  document.getElementById('showName').innerText=player;
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('dashCard').classList.remove('hidden');
+}
+function addMoney(){ alert("Paystack coming soon! For now you have ₦1000 demo. Send your pk_test_ key to activate real payment."); }
+function startGame(){
+  if(balance<500){ alert("No enough balance! Add money."); return; }
+  balance-=500; updateWallet();
+  score=0; qIndex=0; timeLeft=60;
+  document.getElementById('dashCard').classList.add('hidden');
+  document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('gameCard').classList.remove('hidden');
+  showQ();
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{ timeLeft--; document.getElementById('timeLeft').innerText=timeLeft; if(timeLeft<=0) endGame(); },1000);
+}
+function showQ(){
+  document.getElementById('qNum').innerText=qIndex+1;
+  document.getElementById('score').innerText=score;
+  let q=questions[qIndex];
+  document.getElementById('questionText').innerText=q.q;
+  let html=""; q.a.forEach((opt,i)=>{ html+=`<div class="opt" onclick="answer(${i})">${opt}</div>`; });
+  document.getElementById('options').innerHTML=html;
+}
+function answer(i){
+  if(i===questions[qIndex].c) score++;
+  qIndex++;
+  if(qIndex>=questions.length) endGame(); else showQ();
+}
+function endGame(){
+  clearInterval(timerInt);
+  document.getElementById('gameCard').classList.add('hidden');
+  document.getElementById('resultCard').classList.remove('hidden');
+  document.getElementById('finalScore').innerText=score+"/10 Correct";
+  let win=0,msg="";
+  if(score>=9){win=4000;msg="🏆 YOU WIN ₦4,000! Champion!";} 
+  else if(score>=8){win=2000;msg="🥈 YOU WIN ₦2,000! Sharp!";}
+  else if(score>=7){win=1000;msg="🥉 YOU WIN ₦1,000!";} 
+  else {msg="Try again! You need 7+ to win. Practice makes you win.";}
+  balance+=win; updateWallet();
+  document.getElementById('winMsg').innerText=msg+" | New Balance: ₦"+balance;
+}
+function backToDash(){
+  document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('dashCard').classList.remove('hidden');
+}
+function updateWallet(){ document.getElementById('walletBal').innerText="₦"+balance; }
+// PAYSTACK PLACEHOLDER - Paste your key here later:
+// const PAYSTACK_PUBLIC_KEY = "pk_test_XXXXXXXXXXXXXXXX";
+</script>
+</body>
+  </html>
